@@ -1,11 +1,11 @@
 import { UserService } from './../../services/user/user.service';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { MessageService } from 'primeng/api';
+import { Subject, takeUntil } from 'rxjs';
 import { SignUpUserRequest } from 'src/app/models/interfaces/User/SignUpUserRequest';
-import { SignUpUserResponse } from 'src/app/models/interfaces/User/SignUpUserResponce';
 import { AuthRequest } from 'src/app/services/user/auth/AuthRequest';
 
 @Component({
@@ -13,7 +13,8 @@ import { AuthRequest } from 'src/app/services/user/auth/AuthRequest';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnDestroy{
+  private destroy$ = new Subject<void>();
   loginCard = true;
 
   loginForm: FormGroup;
@@ -39,7 +40,11 @@ export class HomeComponent {
 
   onSubmitFormLogin() {
     if (this.loginForm.value && this.loginForm.valid) {
-      this.UserService.authUser(this.loginForm.value as AuthRequest).subscribe({
+      this.UserService.authUser(this.loginForm.value as AuthRequest)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
         next: (response) => {
           if (response) {
             this.cookieService.set('token', response?.token);
@@ -68,7 +73,11 @@ export class HomeComponent {
   }
   onSubmitFormSignUp() {
     if (this.signUpForm.value && this.signUpForm.valid) {
-      this.UserService.signUpUser(this.signUpForm.value as SignUpUserRequest).subscribe({
+      this.UserService.signUpUser(this.signUpForm.value as SignUpUserRequest)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
         next: (response) => {
           if (response) {
             this.signUpForm.reset();
@@ -92,5 +101,10 @@ export class HomeComponent {
         }
       })
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
