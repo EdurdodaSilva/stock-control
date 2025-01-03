@@ -1,0 +1,46 @@
+<div *ngIf="productAction?.event?.action === addProductAction">
+  <form [formGroup]="addProductForm" (ngSubmit)="handleSubmitAddProduct()">
+    <div class="card flex flex-column md:flex-column gap-3">
+      <input pInputText formControlName="name" placeholder="Name" />
+      <p-dropdown
+        styleClass="w-full"
+        [options]="categoriesData"
+        [(ngModel)]="selectedCategory"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Selecione uma categoria"
+        formControlName="category_id"
+      ></p-dropdown>
+      <input pInputText formControlName="price" placeholder="Preço" />
+      <textarea pInputTextarea formControlName="description" placeholder="Descrição"></textarea>
+      <input pInputText formControlName="amount" placeholder="Quantidade" />
+      <div class="flex flex-row justify-content-center align-content-center align-items-center m-1">
+        <p-button
+          [disabled]="!addProductForm.valid"
+          type="submit"
+          label="Adicionar"
+        ></p-button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="productAction?.event?.action === editProductAction">
+  <form [formGroup]="editProductForm" (ngSubmit)="handleSubmitEditProduct">
+     <div class="card flex flex-column md:flex-column gap-3">
+        <input pInputText formControlName="name" placeholder="Name" />
+        <input pInputText formControlName="price" placeholder="Preço" />
+        <textarea pInputTextarea formControlName="description" placeholder="Descrição"></textarea>
+        <input pInputText type="number" formControlName="amount" placeholder="Quantidade" />
+
+        <div class="flex flex-row justify-content-center align-content-center align-items-center m-1">
+          <p-button
+            [disabled]="!editProductForm.valid"
+            type="submit"
+            label="Editar"
+            (onClick)="handleSubmitEditProduct()"
+          ></p-button>
+        </div>
+      </div>
+  </form>
+</div>
